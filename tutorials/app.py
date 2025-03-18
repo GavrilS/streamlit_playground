@@ -1,5 +1,7 @@
 """
 First tutorial app - use data to create a table
+Usage:
+streamlit run app.py
 """
 
 import streamlit as st
