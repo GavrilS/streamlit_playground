@@ -1,9 +1,15 @@
 """
 This is a simple script to retrieve emails with POP3 and use streamlit to display a report of 
-retrieved messages/senders/date_received.
+retrieved messages/senders/date_received. To connect we need to have a file called 'creds.txt'
+in the same directory populated for the example with the following lines:
+pop_server=<server>
+pop_port=<port>
+username=<user@mail>
+password=<user_password>
 
 Usage:
 streamlit run get_mails.py
+python3 get_mails.py
 """
 
 import poplib
