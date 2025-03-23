@@ -16,6 +16,7 @@ import poplib
 import streamlit as st
 
 CREDS = {}
+MAX_MSG_ATTRIBUTES_COUNT = 4
 
 
 def main():
@@ -25,13 +26,37 @@ def main():
     mailbox = poplib.POP3_SSL(CREDS.get('server', ''), CREDS.get('port', ''))
     mailbox.user(CREDS.get('user', ''))
     mailbox.pass_(CREDS.get('password', ''))
+    messages = []
     for i in range(10):
         print('Message number: ', i+1)
+        message_attributes = {}
+        attributes_found = 0
         for msg in mailbox.retr(i+1)[1]:
-            print(msg)
-            print('='*100)
+            if b'Date: ' in msg:
+                message_attributes['date'] = msg.decode('utf-8')
+                attributes_found += 1
+            elif b'To: ' in msg:
+                message_attributes['receivers'] = msg.decode('utf-8')
+                attributes_found += 1
+            elif b'Subject: ' in msg:
+                message_attributes['subject'] = msg.decode('utf-8')
+                attributes_found += 1
+            elif b'From: ' in msg:
+                message_attributes['sender'] = msg.decode('utf-8')
+                attributes_found += 1
 
-        print('End of messages\n', '*'*100)
+            # print(msg)
+            # print('='*100)
+            if attributes_found == MAX_MSG_ATTRIBUTES_COUNT:
+                break
+
+        messages.append(message_attributes)
+
+    count = 0
+    for msg in messages:
+        print('='*100)
+        count += 1
+        print(f"Message {count}: ", msg)
     
     mailbox.quit()
 
