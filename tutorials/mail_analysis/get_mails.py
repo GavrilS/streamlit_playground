@@ -18,6 +18,9 @@ import streamlit as st
 CREDS = {}
 MAX_MSG_ATTRIBUTES_COUNT = 4
 
+def save_email(msg):
+    print('Saving message ', msg.get('subject', 'Empty subject'))
+
 
 def main():
     load_creds()
@@ -58,6 +61,7 @@ def main():
         count += 1
         print(f"Message {count}: ", msg)
         st.write(msg)
+        btn = st.button('Save email', key=count, on_click=save_email(msg))
     
     mailbox.quit()
 
@@ -78,7 +82,3 @@ def load_creds(filepath='creds.txt'):
 
 
 main()
-
-
-if __name__=='__main__':
-    main()
