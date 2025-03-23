@@ -57,6 +57,7 @@ def main():
         print('='*100)
         count += 1
         print(f"Message {count}: ", msg)
+        st.write(msg)
     
     mailbox.quit()
 
@@ -74,6 +75,9 @@ def load_creds(filepath='creds.txt'):
             CREDS['user'] = item.split('=')[1].replace('\n', '')
         elif 'password' in item:
             CREDS['password'] = item.split('=')[1].replace('\n', '')
+
+
+main()
 
 
 if __name__=='__main__':
