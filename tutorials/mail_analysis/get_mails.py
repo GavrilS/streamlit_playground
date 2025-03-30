@@ -18,19 +18,25 @@ import streamlit as st
 CREDS = {}
 MAX_MSG_ATTRIBUTES_COUNT = 4
 
-def save_email(msg):
-    print('Saving message ', msg.get('subject', 'Empty subject'))
+def stateful_button(*args, key=None, **kwargs):
+    if key is None:
+        raise ValueError('Must pass key')
+    
+    if key not in st.session_state:
+        st.session_state[key] = False
+    
+    if st.button(*args, **kwargs):
+        st.session_state[key] = not st.session_state[key]
+
+    return st.session_state[key]
 
 
-def main():
-    load_creds()
-    print('Loaded creds: ', CREDS)
-    print('^'*100)
+def get_mails(mail_count=10):
     mailbox = poplib.POP3_SSL(CREDS.get('server', ''), CREDS.get('port', ''))
     mailbox.user(CREDS.get('user', ''))
     mailbox.pass_(CREDS.get('password', ''))
     messages = []
-    for i in range(10):
+    for i in range(mail_count):
         print('Message number: ', i+1)
         message_attributes = {}
         attributes_found = 0
@@ -55,15 +61,22 @@ def main():
 
         messages.append(message_attributes)
 
+    mailbox.quit()
+    
+    return messages
+
+
+def main():
+    load_creds()
+    messages = get_mails()
+
     count = 0
     for msg in messages:
         print('='*100)
         count += 1
         print(f"Message {count}: ", msg)
         st.write(msg)
-        btn = st.button('Save email', key=count, on_click=save_email(msg))
-    
-    mailbox.quit()
+
 
 def load_creds(filepath='creds.txt'):
     with open(filepath, 'r') as f:
