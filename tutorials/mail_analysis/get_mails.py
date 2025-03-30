@@ -17,6 +17,7 @@ import streamlit as st
 
 CREDS = {}
 MAX_MSG_ATTRIBUTES_COUNT = 4
+LOADED_MAILS = []
 
 def stateful_button(*args, key=None, **kwargs):
     if key is None:
@@ -35,8 +36,7 @@ def get_mails(mail_count=10):
     mailbox = poplib.POP3_SSL(CREDS.get('server', ''), CREDS.get('port', ''))
     mailbox.user(CREDS.get('user', ''))
     mailbox.pass_(CREDS.get('password', ''))
-    messages = []
-    for i in range(mail_count):
+    for i in range(len(LOADED_MAILS), mail_count):
         print('Message number: ', i+1)
         message_attributes = {}
         attributes_found = 0
@@ -59,19 +59,17 @@ def get_mails(mail_count=10):
             if attributes_found == MAX_MSG_ATTRIBUTES_COUNT:
                 break
 
-        messages.append(message_attributes)
+        LOADED_MAILS.append(message_attributes)
 
     mailbox.quit()
-    
-    return messages
 
 
 def main():
     load_creds()
-    messages = get_mails()
+    get_mails()
 
     count = 0
-    for msg in messages:
+    for msg in LOADED_MAILS:
         print('='*100)
         count += 1
         print(f"Message {count}: ", msg)
